@@ -24,8 +24,18 @@ class Dcms_External_Url_Featured_Image{
 	}
 
 	// add_meta_box Callback
-	public function dcms_eufi_show_metabox(){
-		include 'inc_metabox.php';
+	public function dcms_eufi_show_metabox( $post ){
+
+		$img = get_post_meta($post->ID, 'dcms_eufi_img', true);
+		$alt = get_post_meta($post->ID, 'dcms_eufi_alt', true);
+
+
+		$img = "http://decodecms.app/wp-content/uploads/2017/01/mantenimiento-wordpress.svg";
+		$alt = "Este es el texto alt";
+
+		$hasdata = isset($img) && ! empty($img); //if exists and has valid value
+
+		include 'inc-metabox.php';
 	}
 
 
