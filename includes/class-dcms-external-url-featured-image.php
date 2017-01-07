@@ -1,5 +1,8 @@
 <?php
 
+// PENDIENTE DE USAR : dcms_eufi_get_meta
+
+
 // main class external url image
 class Dcms_External_Url_Featured_Image{
 
@@ -15,6 +18,8 @@ class Dcms_External_Url_Featured_Image{
 	public function __construct(){
 
 		if ( is_admin() ){
+			// add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
+			// add_action('plugins_loaded', [$this, 'dcms_eufi_plugin_load_textdomain']);
 			add_action('add_meta_boxes', [$this, 'dcms_eufi_add_metaboxes']);
 			add_action('save_post', [$this, 'dcms_eufi_save_data']);
 		}
@@ -50,10 +55,8 @@ class Dcms_External_Url_Featured_Image{
 	// hook Constructor Callback 
 	public function dcms_eufi_add_metaboxes(){
 
-		$title			= __('External Featured Image', DCMS_DOMAIN);
-
-		$excluded_types	= ['attachment', 'revision', 'nav_menu_item']; // exclude some post types
-		$post_types 	= array_diff( get_post_types( ['public'   => true], 'names' ), $excluded );
+		$title			= __('External Featured Image', DCMS_EUFI_DOMAIN);
+		$post_types 	= $this->dcms_eufi_get_post_types();
 
 		add_meta_box( 'dcmsExternalImage',
 						$title, 
@@ -62,6 +65,15 @@ class Dcms_External_Url_Featured_Image{
 						'side',
 						'low');
 
+	}
+
+	// get list post types without exclude post types
+	private function dcms_eufi_get_post_types(){
+		
+		$excluded_types	= ['attachment', 'revision', 'nav_menu_item'];
+		$post_types 	= array_diff( get_post_types( ['public'   => true], 'names' ), $excluded_types );
+
+		return $post_types;
 	}
 
 	// add_meta_box Callback, it use nelio data if exists 
@@ -79,6 +91,30 @@ class Dcms_External_Url_Featured_Image{
 
 		include 'html/inc-metabox.php';
 	}
+
+
+	// get metadata img and alt
+	private function dcms_eufi_get_meta(){
+		
+		$data  = [];
+		$nelio = false;
+
+		$img = get_post_meta($post->ID, $this->meta_img , true); 
+		$alt = get_post_meta($post->ID, $this->meta_alt , true); 
+
+		if ( ! $img ) {
+			$img   = get_post_meta($post->ID, $this->nelio_img, true); 
+			$alt   = get_post_meta($post->ID, $this->nelio_alt, true);
+			$nelio = true;
+		}
+
+		$data['img'] = $img;
+		$data['alt'] = $alt;
+		$data['nelio'] = $nelio;
+
+		return $data;
+	}
+
 
 	// save data url and alt, it removes nelio data if exists
 	public function dcms_eufi_save_data( $post_id ){
@@ -102,6 +138,73 @@ class Dcms_External_Url_Featured_Image{
 		}
 
 	}
+
+	// build filter for making faking default featured image
+	public function dcms_eufi_faking_featured_image(){
+
+		foreach ( $this->dcms_eufi_get_post_types() as $post_type ) {
+			add_filter( "get_${post_type}_metadata", 'dcms_eufi_validation_thumbnail', 10, 3 );
+		}
+
+	}
+
+	public function dcms_eufi_validation_thumbnail($null, $object_id, $meta_key){
+
+	// 	$return = null;
+
+	// 	if ( $meta_key == '_thumbnail_id' ) {
+
+
+	// 		if ( uses_nelioefi( $object_id ) ) {
+	// 			$result = true;
+	// 		}//end if
+
+	// 	}//end if
+
+
+	// return $result;
+	}
+
+	// // text domain for languages
+	// public function dcms_eufi_plugin_load_textdomain() {
+		
+	// 	$path_languages = basename(dirname(__FILE__)).'/languages/';
+
+	//  	load_plugin_textdomain(DCMS_EUFI_DOMAIN, false, DCMS_EUFI_PATH_LANGUAGE );
+	// }
+
+
+
+/*
+add_action( 'init', 'nelioefi_add_hooks_for_faking_featured_image_if_necessary' );
+function nelioefi_add_hooks_for_faking_featured_image_if_necessary(){
+
+	nelioefi_hook_thumbnail_id();
+
+}//end nelioefi_add_hooks_for_faking_featured_image_if_necessary();
+
+function nelioefi_fake_featured_image_if_necessary( $null, $object_id, $meta_key ) {
+
+	$result = null;
+	if ( '_thumbnail_id' === $meta_key ) {
+
+		if ( uses_nelioefi( $object_id ) ) {
+			$result = true;
+		}//end if
+
+	}//end if
+
+
+	return $result;
+
+}//end nelioefi_fake_featured_image_if_necessary()
+
+function nelioefi_hook_thumbnail_id() {
+	foreach ( get_post_types() as $post_type ) {
+		add_filter( "get_${post_type}_metadata", 'nelioefi_fake_featured_image_if_necessary', 10, 3 );
+	}//end foreach
+}//end nelioefi_hook_thumbnail_id()
+*/
 
 
 }

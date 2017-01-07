@@ -1,15 +1,15 @@
 <div id="dcmsefi_Container" style="display:none;">
 	<input id="dcmsefi_url" type="url" name="dcmsefi_url" placeholder="URL" />
-	<a id="dcmsefi_preview" class="button"><?= __('Preview', DCMS_DOMAIN) ?></a>
+	<a id="dcmsefi_preview" class="button"><?= __('Preview', DCMS_EUFI_DOMAIN) ?></a>
 
 	<input id="dcmsefi_alt" type="text" name="dcmsefi_alt" placeholder="Alt text" style="width:100%">
 
 	<div style="width:100%;border:1px dotted #d1d1d1;min-height:20px;margin-top:8px;text-align:center;color:#d1d1d1;">
-		<span id="dcmsefi_noimg"><?= __('No image', DCMS_DOMAIN); ?></span>
+		<span id="dcmsefi_noimg"><?= __('No image', DCMS_EUFI_DOMAIN); ?></span>
 		<img id="dcmsefi_img" style="max-width:100%;height:auto;" />
 	</div>
 
-	<a id="dcmsefi_remove" class="button" style="margin-top:4px;"><?= __('Remove Image', DCMS_DOMAIN) ?></a>
+	<a id="dcmsefi_remove" class="button" style="margin-top:4px;"><?= __('Remove Image', DCMS_EUFI_DOMAIN) ?></a>
 </div>
 
 <script>
@@ -44,7 +44,7 @@
 			if ( imgUrl != '' ){
 				$("<img>", { // Url validation
 						    src: imgUrl,
-						    error: function() {alert('Error URL Image')},
+						    error: function() {alert('<?= __('Error URL Image', DCMS_EUFI_DOMAIN) ?>')},
 						    load: function() {
 						    	$('#dcmsefi_img').attr('src',imgUrl);
 						    	$('#dcmsefi_noimg').hide();
