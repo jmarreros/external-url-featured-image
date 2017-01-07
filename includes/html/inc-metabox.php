@@ -1,0 +1,75 @@
+<div id="dcmsefi_Container" style="display:none;">
+	<input id="dcmsefi_url" type="url" name="dcmsefi_url" placeholder="URL" />
+	<a id="dcmsefi_preview" class="button"><?= __('Preview', DCMS_DOMAIN) ?></a>
+
+	<input id="dcmsefi_alt" type="text" name="dcmsefi_alt" placeholder="Alt text" style="width:100%">
+
+	<div style="width:100%;border:1px dotted #d1d1d1;min-height:20px;margin-top:8px;text-align:center;color:#d1d1d1;">
+		<span id="dcmsefi_noimg"><?= __('No image', DCMS_DOMAIN); ?></span>
+		<img id="dcmsefi_img" style="max-width:100%;height:auto;" />
+	</div>
+
+	<a id="dcmsefi_remove" class="button" style="margin-top:4px;"><?= __('Remove Image', DCMS_DOMAIN) ?></a>
+</div>
+
+<script>
+
+	jQuery(document).ready(function($){
+
+		// Inicialization
+		$('#dcmsefi_Container').show();
+
+		<?php if ( ! $hasdata ): ?>
+			$('#dcmsefi_img').attr('src','');
+			$('#dcmsefi_noimg').show();
+			$('#dcmsefi_alt').hide().val('');
+			$('#dcmsefi_remove').hide();
+			$('#dcmsefi_url').show().val('');
+			$('#dcmsefi_preview').show();
+		<?php else: ?>
+			$('#dcmsefi_img').attr('src',"<?= $img ?>");
+	    	$('#dcmsefi_noimg').hide();
+	    	$('#dcmsefi_alt').show().val("<?= $alt ?>");
+	    	$('#dcmsefi_remove').show();
+	    	$('#dcmsefi_url').hide().val("<?= $img ?>");
+	    	$('#dcmsefi_preview').hide();
+		<?php endif; ?>
+
+		// Preview
+		$('#dcmsefi_preview').click(function(e){
+			
+			e.preventDefault();
+			imgUrl = $('#dcmsefi_url').val();
+			
+			if ( imgUrl != '' ){
+				$("<img>", { // Url validation
+						    src: imgUrl,
+						    error: function() {alert('Error URL Image')},
+						    load: function() {
+						    	$('#dcmsefi_img').attr('src',imgUrl);
+						    	$('#dcmsefi_noimg').hide();
+						    	$('#dcmsefi_alt').show();
+						    	$('#dcmsefi_remove').show();
+						    	$('#dcmsefi_url').hide();
+						    	$('#dcmsefi_preview').hide();
+						    }
+				});
+			} //-- if 
+		}); //-- click Preview
+
+		// Remove
+		$('#dcmsefi_remove').click(function(e){
+
+			e.preventDefault();
+			$('#dcmsefi_img').attr('src','');
+			$('#dcmsefi_noimg').show();
+	    	$('#dcmsefi_alt').hide().val('');
+	    	$('#dcmsefi_remove').hide();
+	    	$('#dcmsefi_url').show().val('');
+	    	$('#dcmsefi_preview').show();
+
+		}); //-- click Remove
+
+	});
+
+</script>
