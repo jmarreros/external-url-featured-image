@@ -14,15 +14,17 @@ class Dcms_External_Url_Featured_Image{
 	// inicialization
 	public function __construct(){
 
+		add_action('init', [$this, 'dcms_eufi_plugin_load_textdomain']);
+
 		if ( is_admin() ){
-			add_action('plugins_loaded', [$this, 'dcms_eufi_plugin_load_textdomain']);
 			add_action('add_meta_boxes', [$this, 'dcms_eufi_add_metaboxes']);
 			add_action('save_post', [$this, 'dcms_eufi_save_data']);
 		}
-		else
+		else{
 			add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
 			add_filter('post_thumbnail_html', [$this, 'dcms_eufi_replace_thumbnail'], 10, 5 );
-
+		}
+		
 	}
 
 
@@ -132,7 +134,7 @@ class Dcms_External_Url_Featured_Image{
 	// text domain for languages
 	public function dcms_eufi_plugin_load_textdomain() {
 		
-	 	load_plugin_textdomain(DCMS_EUFI_DOMAIN, false, DCMS_EUFI_PATH_LANGUAGE );
+	 	load_plugin_textdomain( DCMS_EUFI_DOMAIN, false, DCMS_EUFI_PATH_LANGUAGE );
 
 	}
 	// ----------------------

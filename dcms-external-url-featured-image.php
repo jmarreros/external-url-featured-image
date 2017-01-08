@@ -8,20 +8,20 @@
  * Author URI:        https://decodecms.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       dcms-eufi
+ * Text Domain:       dcms-external-url-featured-image
  * Domain Path:       /languages
  */
 
 //if this file is called directly, abort
 if ( ! defined('WPINC') ) die();
 
-
 // constants definition
 define('DCMS_EUFI_PATH_INCLUDE', plugin_dir_path( __FILE__ ).'includes/');
-define('DCMS_EUFI_PATH_LANGUAGE', plugin_dir_path( __FILE__ ).'languages/');
-define('DCMS_EUFI_DOMAIN', 'dcms-eufi');
+define('DCMS_EUFI_PATH_LANGUAGE', 'dcms-external-url-featured-image/languages');
+define('DCMS_EUFI_DOMAIN','dcms-external-url-featured-image');
 
 require_once DCMS_EUFI_PATH_INCLUDE.'class-dcms-external-url-featured-image.php';
 
 new Dcms_External_Url_Featured_Image();
+
 

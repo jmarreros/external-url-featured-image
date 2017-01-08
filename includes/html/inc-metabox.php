@@ -1,7 +1,7 @@
 <div id="dcmsefi_Container" style="display:none;">
-	<input id="dcmsefi_url" type="url" name="dcmsefi_url" placeholder="URL" />
-	<a id="dcmsefi_preview" class="button"><?= __('Preview', DCMS_EUFI_DOMAIN) ?></a>
-
+	<input id="dcmsefi_url" type="url" name="dcmsefi_url" placeholder="URL" style="width:50%;" />
+	<a id="dcmsefi_preview" class="button" style="text-align:center;width:46%;display:inline-block;"><?= __('Preview', DCMS_EUFI_DOMAIN) ?></a>
+	
 	<input id="dcmsefi_alt" type="text" name="dcmsefi_alt" placeholder="Alt text" style="width:100%">
 
 	<div style="width:100%;border:1px dotted #d1d1d1;min-height:20px;margin-top:8px;text-align:center;color:#d1d1d1;">
