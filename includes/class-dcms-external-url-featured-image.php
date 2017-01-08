@@ -1,7 +1,5 @@
 <?php
 
-//Verificar si funciona bien : dcms_eufi_hasdata
-
 // main class external url image
 class Dcms_External_Url_Featured_Image{
 
@@ -17,12 +15,12 @@ class Dcms_External_Url_Featured_Image{
 	public function __construct(){
 
 		if ( is_admin() ){
-			// add_action('plugins_loaded', [$this, 'dcms_eufi_plugin_load_textdomain']);
-			// add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
+			add_action('plugins_loaded', [$this, 'dcms_eufi_plugin_load_textdomain']);
 			add_action('add_meta_boxes', [$this, 'dcms_eufi_add_metaboxes']);
 			add_action('save_post', [$this, 'dcms_eufi_save_data']);
 		}
 		else
+			add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
 			add_filter('post_thumbnail_html', [$this, 'dcms_eufi_replace_thumbnail'], 10, 5 );
 
 	}
@@ -111,7 +109,7 @@ class Dcms_External_Url_Featured_Image{
 	public function dcms_eufi_faking_featured_image(){
 
 		foreach ( $this->dcms_eufi_get_post_types() as $post_type ) {
-			add_filter( "get_${post_type}_metadata", 'dcms_eufi_verify_thumbnail', 10, 3 );
+			add_filter( "get_${post_type}_metadata", [$this, 'dcms_eufi_verify_thumbnail'], 10, 3 );
 		}
 
 	}
@@ -120,55 +118,25 @@ class Dcms_External_Url_Featured_Image{
 	public function dcms_eufi_verify_thumbnail( $null, $object_id, $meta_key ){
 
 		if ( $meta_key == '_thumbnail_id' ){
-			
+
 			if ( $this->dcms_eufi_hasdata( $object_id ) )
 				return true;
-
 		}
 
 		return null;
 	}
+	// ----------------------
 
-	// // text domain for languages
-	// public function dcms_eufi_plugin_load_textdomain() {
+
+	// ---- Text Domain ----
+	// text domain for languages
+	public function dcms_eufi_plugin_load_textdomain() {
 		
-	// 	$path_languages = basename(dirname(__FILE__)).'/languages/';
+	 	load_plugin_textdomain(DCMS_EUFI_DOMAIN, false, DCMS_EUFI_PATH_LANGUAGE );
 
-	//  	load_plugin_textdomain(DCMS_EUFI_DOMAIN, false, DCMS_EUFI_PATH_LANGUAGE );
-	// }
+	}
+	// ----------------------
 
-
-
-/*
-add_action( 'init', 'nelioefi_add_hooks_for_faking_featured_image_if_necessary' );
-function nelioefi_add_hooks_for_faking_featured_image_if_necessary(){
-
-	nelioefi_hook_thumbnail_id();
-
-}//end nelioefi_add_hooks_for_faking_featured_image_if_necessary();
-
-function nelioefi_fake_featured_image_if_necessary( $null, $object_id, $meta_key ) {
-
-	$result = null;
-	if ( '_thumbnail_id' === $meta_key ) {
-
-		if ( uses_nelioefi( $object_id ) ) {
-			$result = true;
-		}//end if
-
-	}//end if
-
-
-	return $result;
-
-}//end nelioefi_fake_featured_image_if_necessary()
-
-function nelioefi_hook_thumbnail_id() {
-	foreach ( get_post_types() as $post_type ) {
-		add_filter( "get_${post_type}_metadata", 'nelioefi_fake_featured_image_if_necessary', 10, 3 );
-	}//end foreach
-}//end nelioefi_hook_thumbnail_id()
-*/
 
 
 	// ------------------------------
@@ -205,7 +173,7 @@ function nelioefi_hook_thumbnail_id() {
 		return $data;
 	}
 
-	// validate if a post has data
+	// verify if a post has data
 	private function dcms_eufi_hasdata( $id ){
 
 		return  get_post_meta($id, $this->meta_img , true) ||
