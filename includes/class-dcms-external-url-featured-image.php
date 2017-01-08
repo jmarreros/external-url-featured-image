@@ -1,7 +1,6 @@
 <?php
 
-// PENDIENTE DE USAR : dcms_eufi_get_meta
-
+//Verificar si funciona bien : dcms_eufi_hasdata
 
 // main class external url image
 class Dcms_External_Url_Featured_Image{
@@ -18,8 +17,8 @@ class Dcms_External_Url_Featured_Image{
 	public function __construct(){
 
 		if ( is_admin() ){
-			// add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
 			// add_action('plugins_loaded', [$this, 'dcms_eufi_plugin_load_textdomain']);
+			// add_action('init', [$this, 'dcms_eufi_faking_featured_image']);
 			add_action('add_meta_boxes', [$this, 'dcms_eufi_add_metaboxes']);
 			add_action('save_post', [$this, 'dcms_eufi_save_data']);
 		}
@@ -28,30 +27,30 @@ class Dcms_External_Url_Featured_Image{
 
 	}
 
-	// hook filter for thumbnail
+
+	// ---- Show Thumbnails ----
+	// hook filter for thumbnail in front-end
 	public function dcms_eufi_replace_thumbnail($html, $post_id, $post_image_id, $size, $attr){
 
-		$img = get_post_meta($post_id, $this->meta_img , true); 
-		$alt = get_post_meta($post_id, $this->meta_alt , true); 
+		$data = $this->dcms_eufi_get_meta( $post_id );
 
-		if ( ! $img ) {
-			$img = get_post_meta($post_id, $this->nelio_img, true); 
-			$alt = get_post_meta($post_id, $this->nelio_alt, true);
+		if ( ! $data['hasdata'] ) return $html;
 
-			if ( ! $img ) return $html;
-		}
-
+		$img 		= $data['img'];
+		$alt 		= ( $data['alt'] ) ? 'alt="'.$data['alt'].'"' : '';
 		$classes 	= 'external-img wp-post-image ';
 		$classes   .= ( isset($attr['class']) ) ? $attr['class'] : '';
 		$style 		= ( isset($attr['style']) ) ? 'style="'.$attr['style'].'"' : '';
-		$alt 		= ( $alt ) ? 'alt="'.$alt.'"' : ''; 
 
 		$html = sprintf('<img src="%s" %s class="%s" %s />', 
 						$img, $alt, $classes, $style);
 
 		return $html;
 	}
+	// --------------
 
+
+	// ---- Add Metaboxes ----
 	// hook Constructor Callback 
 	public function dcms_eufi_add_metaboxes(){
 
@@ -67,55 +66,21 @@ class Dcms_External_Url_Featured_Image{
 
 	}
 
-	// get list post types without exclude post types
-	private function dcms_eufi_get_post_types(){
-		
-		$excluded_types	= ['attachment', 'revision', 'nav_menu_item'];
-		$post_types 	= array_diff( get_post_types( ['public'   => true], 'names' ), $excluded_types );
-
-		return $post_types;
-	}
-
 	// add_meta_box Callback, it use nelio data if exists 
 	public function dcms_eufi_show_metabox( $post ){
 
-		$img = get_post_meta($post->ID, $this->meta_img , true); 
-		$alt = get_post_meta($post->ID, $this->meta_alt , true); 
+		$data 	 = $this->dcms_eufi_get_meta( $post->ID );
 
-		if ( ! $img ) {
-			$img = get_post_meta($post->ID, $this->nelio_img, true); 
-			$alt = get_post_meta($post->ID, $this->nelio_alt, true);
-		}
+		$img 	 = $data['img'];
+		$alt 	 = $data['alt'];
+		$hasdata = $data['hasdata'];
 
-		$hasdata = isset($img) && ! empty($img); //if exists and has valid value
-
-		include 'html/inc-metabox.php';
+		include 'html/inc-metabox.php';	
 	}
+	// ----------------------
 
 
-	// get metadata img and alt
-	private function dcms_eufi_get_meta(){
-		
-		$data  = [];
-		$nelio = false;
-
-		$img = get_post_meta($post->ID, $this->meta_img , true); 
-		$alt = get_post_meta($post->ID, $this->meta_alt , true); 
-
-		if ( ! $img ) {
-			$img   = get_post_meta($post->ID, $this->nelio_img, true); 
-			$alt   = get_post_meta($post->ID, $this->nelio_alt, true);
-			$nelio = true;
-		}
-
-		$data['img'] = $img;
-		$data['alt'] = $alt;
-		$data['nelio'] = $nelio;
-
-		return $data;
-	}
-
-
+	// ---- Save Data ----
 	// save data url and alt, it removes nelio data if exists
 	public function dcms_eufi_save_data( $post_id ){
 		
@@ -138,31 +103,30 @@ class Dcms_External_Url_Featured_Image{
 		}
 
 	}
+	// ----------------------
 
+
+	// ---- Faking Thumbnail ----
 	// build filter for making faking default featured image
 	public function dcms_eufi_faking_featured_image(){
 
 		foreach ( $this->dcms_eufi_get_post_types() as $post_type ) {
-			add_filter( "get_${post_type}_metadata", 'dcms_eufi_validation_thumbnail', 10, 3 );
+			add_filter( "get_${post_type}_metadata", 'dcms_eufi_verify_thumbnail', 10, 3 );
 		}
 
 	}
 
-	public function dcms_eufi_validation_thumbnail($null, $object_id, $meta_key){
+	// verify if 
+	public function dcms_eufi_verify_thumbnail( $null, $object_id, $meta_key ){
 
-	// 	$return = null;
+		if ( $meta_key == '_thumbnail_id' ){
+			
+			if ( $this->dcms_eufi_hasdata( $object_id ) )
+				return true;
 
-	// 	if ( $meta_key == '_thumbnail_id' ) {
+		}
 
-
-	// 		if ( uses_nelioefi( $object_id ) ) {
-	// 			$result = true;
-	// 		}//end if
-
-	// 	}//end if
-
-
-	// return $result;
+		return null;
 	}
 
 	// // text domain for languages
@@ -205,6 +169,49 @@ function nelioefi_hook_thumbnail_id() {
 	}//end foreach
 }//end nelioefi_hook_thumbnail_id()
 */
+
+
+	// ------------------------------
+	//        util functions 
+	// ------------------------------
+
+	// get list post types without exclude post types
+	private function dcms_eufi_get_post_types(){
+		
+		$excluded_types	= ['attachment', 'revision', 'nav_menu_item'];
+		$post_types 	= array_diff( get_post_types( ['public'   => true], 'names' ), $excluded_types );
+
+		return $post_types;
+	}
+
+
+	// get metadata img and alt and return a data array
+	private function dcms_eufi_get_meta( $id ){
+		
+		$data  = [];
+
+		$img = get_post_meta($id, $this->meta_img , true); 
+		$alt = get_post_meta($id, $this->meta_alt , true); 
+
+		if ( ! $img ) {
+			$img   = get_post_meta($id, $this->nelio_img, true); 
+			$alt   = get_post_meta($id, $this->nelio_alt, true);
+		}
+
+		$data['img'] 	 = $img;
+		$data['alt'] 	 = $alt;
+		$data['hasdata'] = isset($img) && ! empty($img); 
+
+		return $data;
+	}
+
+	// validate if a post has data
+	private function dcms_eufi_hasdata( $id ){
+
+		return  get_post_meta($id, $this->meta_img , true) ||
+				get_post_meta($id, $this->nelio_img, true);
+
+	}
 
 
 }
