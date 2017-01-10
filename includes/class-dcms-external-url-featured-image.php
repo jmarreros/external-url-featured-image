@@ -84,12 +84,12 @@ class Dcms_External_Url_Featured_Image{
 	// save data url and alt, it removes nelio data if exists
 	public function dcms_eufi_save_data( $post_id ){
 		
-		$url = isset($_POST['dcmsefi_url'])?$_POST['dcmsefi_url']:null;
-		$alt = isset($_POST['dcmsefi_alt'])?$_POST['dcmsefi_alt']:null;
+		$url = isset($_POST['dcmsefi_url'])?esc_url($_POST['dcmsefi_url']):null;
+		$alt = isset($_POST['dcmsefi_alt'])?wp_strip_all_tags($_POST['dcmsefi_alt']):null;
 
 		if ( $url ){
-			update_post_meta($post_id, $this->meta_img, wp_strip_all_tags($url));
-			if ( $alt )	update_post_meta($post_id, $this->meta_alt, wp_strip_all_tags($alt));	
+			update_post_meta($post_id, $this->meta_img, $url);
+			if ( $alt )	update_post_meta($post_id, $this->meta_alt, $alt);	
 		}
 		else{
 			delete_post_meta($post_id, $this->meta_img);
