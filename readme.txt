@@ -4,15 +4,15 @@ Donate link: https://decodecms.com/
 Tags: external, url, featured, featured image, flickr, picasa, instagram, cdn, s3, image, external featured image
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Use external url images for your posts, pages, and other kind of post types.
+Use an external url image as Featured Image for your posts, pages, and other kind of post types.
 
 == Description ==
 
-This Plugin allows to use an external image as Featured Image, this can be specially useful if you house your images in another location.
+This Plugin allows to use an external image as Featured Image, this can be especially useful if you house your images in another location.
 
 This Plugin is compatible with Nelio External Featured Image Metadata, so you can reuse your data in case you want to uninstall Nelio Plugin.
 
@@ -21,7 +21,7 @@ This Plugin is compatible with Nelio External Featured Image Metadata, so you ca
 
 This section describes how to install the plugin and get it working.
 
-1. Upload and extract the plugin file to the `/wp-content/plugins/` directory, 
+1. Upload and extract the plugin file to the `/wp-content/plugins/` directory,
 or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. This plugin doesn't have configuration screen, you can view a metabox directly when you create or edit your posts or pages.
@@ -34,7 +34,8 @@ or install the plugin through the WordPress plugins screen directly.
 
 
 == Changelog ==
+= 1.0.1 =
+* * Fix text domain for translation
 
 = 1.0 =
 * * Initial release, stable version.
-
